@@ -11,6 +11,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI) // 相当于全局注册elementUI  Vue.use => 干了什么?
 Vue.use(Component) // 注册插件
 // Vue.use(axios) // 使用注册axios第二种方式
+// this.$router =>router
 new Vue({
   router,
   render: h => h(App)
