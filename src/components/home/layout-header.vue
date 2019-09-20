@@ -41,11 +41,8 @@ export default {
   methods: {
     // 获取用户个人资料
     getUserInfo () {
-      let token = window.localStorage.getItem('user-token') // 从前端缓存中获取token
       this.$axios({
-        url: '/user/profile',
-        headers: { 'Authorization': `Bearer ${token}` } // 请求参数
-      }).then(result => {
+        url: '/user/profile' }).then(result => {
         this.userInfo = result.data.data // 接收数据对象
       })
     },
