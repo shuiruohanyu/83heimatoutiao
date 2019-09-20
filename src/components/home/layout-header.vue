@@ -12,16 +12,18 @@
           <img class='head-img' :src="!userInfo.photo ? userInfo.photo : defaultImg" alt="">
 
     <!-- 下拉菜单组件  el-dropdown -->
-     <el-dropdown trigger="click">
+    <!-- command事件 -->
+     <el-dropdown trigger="click" @command="commonClick">
          <!-- 匿名插槽  -->
          <span class="el-dropdown-link">
           {{userInfo.name}}<i class="el-icon-arrow-down el-icon--right"></i>
          </span>
         <!-- 具名插槽 dropdown -->
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item >个人信息</el-dropdown-item>
-        <el-dropdown-item >git地址</el-dropdown-item>
-        <el-dropdown-item >退出</el-dropdown-item>
+        <!-- command属性会在触发点击时 携带给command事件的方法 -->
+        <el-dropdown-item command="account">个人信息</el-dropdown-item>
+        <el-dropdown-item command="git">git地址</el-dropdown-item>
+        <el-dropdown-item command="lgout">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
       </el-col>
@@ -46,6 +48,19 @@ export default {
       }).then(result => {
         this.userInfo = result.data.data // 接收数据对象
       })
+    },
+    // 公共点击事件
+    commonClick (key) {
+      if (key === 'account') {
+        // 账户信息
+      } else if (key === 'git') {
+        // 去项目git地址
+        window.location.href = 'https://github.com/shuiruohanyu/83heimatoutiao'
+      } else {
+        // 退出
+        window.localStorage.clear() // 只能清除本项目的所有前端缓存
+        this.$router.push('/login') // 跳转到登录页
+      }
     }
   },
   // 钩子函数
