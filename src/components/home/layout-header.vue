@@ -9,7 +9,7 @@
       <!-- 右侧 -->
       <el-col :span="4">
           <!-- 用户头像 -->
-          <img class='head-img' :src="!userInfo.photo ? userInfo.photo : defaultImg" alt="">
+          <img class='head-img' :src="userInfo.photo ? userInfo.photo : defaultImg" alt="">
 
     <!-- 下拉菜单组件  el-dropdown -->
     <!-- command事件 -->
