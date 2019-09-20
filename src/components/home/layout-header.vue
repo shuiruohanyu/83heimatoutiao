@@ -9,12 +9,13 @@
       <!-- 右侧 -->
       <el-col :span="4">
           <!-- 用户头像 -->
-          <img class='head-img' src="../../assets/img/avatar.jpg" alt="">
+          <img class='head-img' :src="!userInfo.photo ? userInfo.photo : defaultImg" alt="">
+
     <!-- 下拉菜单组件  el-dropdown -->
      <el-dropdown trigger="click">
          <!-- 匿名插槽  -->
          <span class="el-dropdown-link">
-           83期同学<i class="el-icon-arrow-down el-icon--right"></i>
+          {{userInfo.name}}<i class="el-icon-arrow-down el-icon--right"></i>
          </span>
         <!-- 具名插槽 dropdown -->
       <el-dropdown-menu slot="dropdown">
@@ -29,7 +30,28 @@
 
 <script>
 export default {
-
+  data () {
+    return {
+      userInfo: {}, // 个人信息对象
+      defaultImg: require('../../assets/img/avatar.jpg') // 转成base64
+    }
+  },
+  methods: {
+    // 获取用户个人资料
+    getUserInfo () {
+      let token = window.localStorage.getItem('user-token') // 从前端缓存中获取token
+      this.$axios({
+        url: '/user/profile',
+        headers: { 'Authorization': `Bearer ${token}` } // 请求参数
+      }).then(result => {
+        this.userInfo = result.data.data // 接收数据对象
+      })
+    }
+  },
+  // 钩子函数
+  created () {
+    this.getUserInfo()
+  }
 }
 </script>
 
