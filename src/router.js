@@ -20,7 +20,13 @@ export default new Router({
         {
           path: '', // 什么都不写 就默认是二级路由组件的
           component: Main // 默认二级路由
-        }]
+        },
+        {
+          // path:'/home/comment', // 完整写法
+          path: 'comment', // 评论列表路径
+          component: () => import('./views/comment')
+        }
+      ]
     }, {
       path: '/login',
       component: Login
