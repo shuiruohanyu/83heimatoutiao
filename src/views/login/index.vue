@@ -8,7 +8,7 @@
          </div>
          <!-- 表单 => el-form包裹 -->
          <!-- 数据校验 => el-form绑定 model ,绑定rules规则 -->
-         <el-form ref="myForm" :model="loginForm" :rules="loginRules" style="margin-top:20px">
+         <el-form status-icon ref="myForm" :model="loginForm" :rules="loginRules" style="margin-top:20px">
              <!-- 每一个表单域由一个 Form-Item 组件构成 -->
              <!-- form-item  prop属性 绑定 下面表单组件的 字段名 -->
              <el-form-item prop="mobile">

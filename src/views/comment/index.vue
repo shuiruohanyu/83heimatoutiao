@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading"  >
     <!-- 面包屑组件 -->
     <!-- slot=> header 是给el-card的插槽 -->
     <bread-crumb slot="header">
@@ -54,22 +54,28 @@ export default {
         total: 0, // 总条数
         currentPage: 1, // 默认第一页
         pageSize: 10 // 每页多少条
-      }
+      },
+      loading: false // 定义一个变量loading
     }
   },
   methods: {
+    // newPage  elementUI调用该事件时传出的一个参数
+    // @自定义事件
+    // this.$emit("事件名",newpage1,newpage2)
     changePage (newPage) {
       this.page.currentPage = newPage // 更新最新页码给 currernpage
       this.getComment()
     },
     //   获取评论列表
     getComment () {
+      this.loading = true // 显示遮罩
       this.$axios({
         url: '/articles',
         params: { response_type: 'comment', page: this.page.currentPage, per_page: this.page.pageSize }
       }).then(result => {
         this.list = result.data.results // 把返回的数据赋值给list
         this.page.total = result.data.total_count // 把总条数给 分页组件的总条数
+        this.loading = false // 关闭遮罩
       })
     },
     // filter => return
