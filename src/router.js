@@ -25,6 +25,9 @@ export default new Router({
           // path:'/home/comment', // 完整写法
           path: 'comment', // 评论列表路径
           component: () => import('./views/comment')
+        }, {
+          path: 'material',
+          component: () => import('./views/material')
         }
       ]
     }, {
