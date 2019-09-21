@@ -14,9 +14,15 @@
             <el-table-column align="center" label="总评论数" prop="total_comment_count" ></el-table-column>
             <el-table-column align="center" label="粉丝评论数" prop="fans_comment_count" ></el-table-column>
             <el-table-column align="center" label="操作"  >
+              <!-- 作用域插槽 => 接收 el-table-column row/column/$index/store -->
+               <template slot-scope="obj">
                 <!-- 自定义内容 获取其他列的数据 -->
-                <el-button size="small" type='text'>修改</el-button>
-                <el-button size="small" type='text'>关闭评论</el-button>
+                 <el-button size="small" type='text'>修改</el-button>
+                 <el-button @click="closeOrOpen(obj.row)" size="small" type='text'>
+                   {{
+                     obj.row.comment_status ? "关闭评论" : '打开评论'
+                   }}</el-button>
+               </template>
             </el-table-column>
 
         </el-table>
@@ -43,6 +49,22 @@ export default {
     // filter => return
     stateFormatter (row, column, cellValue, index) {
       return cellValue ? '正常' : '关闭'
+    },
+    // 打开或者关闭  row 当前行数据
+    closeOrOpen (row) {
+      let mess = row.comment_status ? '关闭' : '打开' // 得到打开或者关闭
+      this.$confirm(`您确定要${mess}评论?`).then(() => {
+        // 确定调用接口
+        this.$axios({
+          url: 'comments/status', // 地址
+          method: 'put',
+          params: { article_id: row.id }, // 路径参数
+          data: { allow_comment: !row.comment_status } // body参数  调用状态和当前状态是反着的 所以取反
+        }).then(() => {
+          // 成功之后一定会进入then
+          this.getComment() // 重新拉取数据
+        })
+      })
     }
   },
   created () {
