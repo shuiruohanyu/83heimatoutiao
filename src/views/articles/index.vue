@@ -58,7 +58,7 @@
         <!-- 右侧 -->
         <div class='right'>
             <span><i class="el-icon-edit"></i>修改</span>
-            <span><i class="el-icon-delete"></i>删除</span>
+            <span @click="delArticles(item.id)"><i class="el-icon-delete"></i>删除</span>
         </div>
      </div>
      <!-- 分页组件 -->
@@ -95,6 +95,19 @@ export default {
     }
   },
   methods: {
+    // 删除文章
+    delArticles (id) {
+      this.$confirm('您确定要删除此文章吗').then(() => {
+        // id超过了安全数字限制 被jsonbigint转成了bigNUmber类型 要想变成字符串
+        // id.toString()
+        this.$axios({
+          url: `/articles/${id.toString()}`,
+          method: 'delete'
+        }).then(() => {
+          this.queryArticles() // 带条件的查询
+        })
+      })
+    },
     // 状态变化事件
     changeCondition () {
       // 因为值改变时 formdata已经是最新的值 所以直接可以用formData的值请求
@@ -108,6 +121,7 @@ export default {
       this.page.currentPage = newPage // 赋值最新页码
       this.queryArticles()
     },
+    // 带条件的查询
     queryArticles () {
       let params = {
         status: this.formData.status === 5 ? null : this.formData.status, // 状态  如果为5时，就是全部，但是接口要求全部不传内容 null就相当于什么都没传
@@ -219,6 +233,7 @@ export default {
         font-size: 12px;
         span {
             margin-right:8px;
+            cursor: pointer;
         }
     }
 }
