@@ -1,6 +1,6 @@
 <template>
   <!-- 卡片 -->
-  <el-card>
+  <el-card v-loading="loading">
     <!-- header具名是给卡片的 -->
     <bread-crumb slot="header">
       <!-- title具名 是面包屑组件的具名 -->
@@ -18,8 +18,10 @@
           <el-card class="img-item" v-for="item in list" :key="item.id">
             <img :src="item.url" alt />
             <div class="operate">
-              <i :style="{color: item.is_collected ? 'red' : '#000'}" class="el-icon-star-on"></i>
-              <i class="el-icon-delete-solid"></i>
+              <!-- 收藏和取消收藏 -->
+              <i @click="collectOrCancel(item)" :style="{color: item.is_collected ? 'red' : '#000'}" class="el-icon-star-on"></i>
+              <!-- 删除 传入id -->
+              <i @click="delImg(item.id)" class="el-icon-delete-solid"></i>
             </div>
           </el-card>
         </div>
@@ -58,10 +60,37 @@ export default {
         total: 0,
         currentPage: 1,
         pageSize: 10
-      }
+      },
+      loading: false
     }
   },
   methods: {
+    // 取消或者收藏
+    collectOrCancel (item) {
+      let mess = item.is_collected ? '取消' : ''
+      this.$confirm(`您确定要${mess}收藏该图片?`).then(() => {
+        this.$axios({
+          url: `/user/images/${item.id}`,
+          method: 'put',
+          data: { collect: !item.is_collected } // 取反 收藏和取消收藏和当前的状态是反着的
+        }).then(() => {
+          // 收藏或者取消收藏成功  重新拉取数据
+          this.getMaterial()
+        })
+      })
+    },
+    // 删除图片
+    delImg (id) {
+      this.$confirm('您确定要删除该图片吗').then(() => {
+        // 如果点击了确定
+        this.$axios({
+          url: `/user/images/${id}`,
+          method: 'delete'
+        }).then(() => {
+          this.getMaterial()
+        })
+      })
+    },
     //   上传方法
     uploadImg (params) {
       const data = new FormData() // 声明一个新的表单
@@ -88,6 +117,7 @@ export default {
     },
     //   获取素材列表
     getMaterial () {
+      this.loading = true
       // this.activeName === 'collect' 相当于去找收藏的数据
       // 如果不等于collect 相等于去找全部的数据
       this.$axios({
@@ -98,6 +128,7 @@ export default {
       }).then(result => {
         this.list = result.data.results
         this.page.total = result.data.total_count // 赋值总数  每次总条数都会重新赋值
+        this.loading = false
       })
     }
   },
