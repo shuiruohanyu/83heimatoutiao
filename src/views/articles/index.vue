@@ -6,27 +6,37 @@
                内容列表
            </template>
         </bread-crumb>
+        {{formData}}
         <!-- 表单 -->
         <el-form style="margin-left:50px">
             <!-- 文章状态 -->
             <el-form-item label="文章状态:">
-                 <el-radio-group>
-                   <el-radio>全部</el-radio>
-                   <el-radio>草稿</el-radio>
-                   <el-radio>待审核</el-radio>
-                   <el-radio>审核通过</el-radio>
-                   <el-radio>审核失败</el-radio>
+              <!-- v-model来源于 el-radio中的label属性 -->
+                 <el-radio-group @change="changeCondition" v-model="formData.status">
+                   <el-radio :label="5">全部</el-radio>
+                   <el-radio :label="0">草稿</el-radio>
+                   <el-radio :label="1">待审核</el-radio>
+                   <el-radio :label="2">审核通过</el-radio>
+                   <el-radio :label="3">审核失败</el-radio>
 
             </el-radio-group>
             </el-form-item>
             <el-form-item label="频道列表:">
                 <!-- 频道列表 -->
-                <el-select>
+                <el-select @change="changeCondition" v-model="formData.channel_id">
+                  <!-- 循环生成el-option -->
+                  <el-option v-for="item in channels" :key="item.id" :value="item.id" :label="item.name">
+
+                  </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="时间选择:">
+              <!-- value-format 指定绑定的值的格式 -->
                  <el-date-picker
+                 @change="changeCondition"
+                   v-model="formData.date"
                    type="daterange"
+                   value-format="yyyy-MM-dd"
                    start-placeholder="开始日期"
                    end-placeholder="结束日期">
           </el-date-picker>
@@ -59,20 +69,49 @@
 export default {
   data () {
     return {
+      formData: {
+        status: 5, // 文章状态 0-草稿，1-待审核，2-审核通过，3-审核失败，4-已删除
+        channel_id: null, // 频道id
+        date: []
+      },
       list: [],
+      channels: [], // 定义一个频道数组
       defaultImg: require('../../assets/img/default.gif') // 将图片地址转成base64
     }
   },
   methods: {
-    getArticles () {
+    // 状态变化事件
+    changeCondition () {
+      // 因为值改变时 formdata已经是最新的值 所以直接可以用formData的值请求
+      // 组装请求参数
+      let params = {
+        status: this.formData.status === 5 ? null : this.formData.status, // 状态  如果为5时，就是全部，但是接口要求全部不传内容 null就相当于什么都没传
+        channel_id: this.formData.channel_id, // 频道id
+        begin_pubdate: this.formData.date.length ? this.formData.date[0] : null,
+        end_pubdate: this.formData.date.length > 1 ? this.formData.date[1] : null // 结束时间
+      }
+
+      this.getArticles(params)
+    },
+    getArticles (params) {
       this.$axios({
-        url: '/articles'
+        url: '/articles',
+        params
       }).then(result => {
         this.list = result.data.results // 获取文章列表
+      })
+    },
+    // 获取频道列表
+    getChannels () {
+      this.$axios({
+        url: '/channels'
+      }).then(result => {
+        this.channels = result.data.channels // 获取channels
       })
     }
   },
   created () {
+    this.getChannels() // 获取频道
     this.getArticles() // 获取文章
   },
   filters: {
