@@ -67,25 +67,64 @@ export default {
         this.channels = result.data.channels // 获取channels频道
       })
     },
+    // 根据文章id获取文章详情
+    getArticleById (articleId) {
+      this.$axios({
+        url: `/articles/${articleId}`
+      }).then(result => {
+        this.formData = result.data
+      })
+    },
     // 发布文章 validate
     publish (draft) {
       this.$refs.publishForm.validate((isOk) => {
         if (isOk) {
+          let { articleId } = this.$route.params // 有 articleId就是编辑 没articleId就是新增
           this.$axios({
-            url: '/articles',
-            method: 'post',
-            params: { draft }, // draft为true时 是草稿 为false时 是正式内容
+            url: articleId ? `/articles/${articleId}` : '/articles',
+            method: articleId ? 'put' : 'post',
+            params: { draft },
             data: this.formData
           }).then(() => {
             // 发布成功了 => 回到内容列表
             this.$router.push('/home/articles')
           })
+
+          // 原始代码
+          // if (articleId) {
+          //   // 修改
+          //   this.$axios({
+          //     url: `/articles/${articleId}`,
+          //     params: { draft }, // draft为true时 是草稿 为false时 是正式内容
+          //     method: 'put',
+          //     data: this.formData
+          //   }).then(result => {
+          //     // 发布成功了 => 回到内容列表
+          //     this.$router.push('/home/articles')
+          //   })
+          // } else {
+          //   this.$axios({
+          //     url: '/articles',
+          //     method: 'post',
+          //     params: { draft }, // draft为true时 是草稿 为false时 是正式内容
+          //     data: this.formData
+          //   }).then(() => {
+          //   // 发布成功了 => 回到内容列表
+          //     this.$router.push('/home/articles')
+          //   })
+          // }
         }
       })
     }
   },
   created () {
     this.getChannels() // 获取频道
+    // 获取id
+    let { articleId } = this.$route.params // 有 articleId就是编辑 没articleId就是新增
+    articleId && this.getArticleById(articleId) // 如果articleId存在才执行后界面的逻辑
+    // if (articleId) {
+    //   this.getArticleById(articleId)
+    // }
   }
 }
 </script>
