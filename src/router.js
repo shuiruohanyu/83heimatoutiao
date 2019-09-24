@@ -39,6 +39,10 @@ export default new Router({
           // 新建组件
           path: 'publish',
           component: () => import('./views/publish')
+        }, {
+          // 账户信息
+          path: 'account',
+          component: () => import('./views/account')
         }
       ]
     }, {
