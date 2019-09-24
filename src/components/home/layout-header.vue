@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import eventBus from '../../utils/eventBus'
 export default {
   data () {
     return {
@@ -64,6 +65,10 @@ export default {
   // 钩子函数
   created () {
     this.getUserInfo()
+    // 一旦监听到事件 就会执行后面的函数
+    eventBus.$on('updateUserInfo', () => {
+      this.getUserInfo()
+    }) // 事件名
   }
 }
 </script>

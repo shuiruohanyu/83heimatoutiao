@@ -77,6 +77,9 @@ export default {
   },
   created () {
     this.getAllImg()
+    // this.$on('selectOneImg', () => {
+    //   alert('我触发了')
+    // })
   }
 }
 </script>
