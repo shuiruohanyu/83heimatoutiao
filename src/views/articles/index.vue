@@ -11,7 +11,7 @@
             <!-- 文章状态 -->
             <el-form-item label="文章状态:">
               <!-- v-model来源于 el-radio中的label属性 -->
-                 <el-radio-group @change="changeCondition" v-model="formData.status">
+                 <el-radio-group  v-model="formData.status">
                    <el-radio :label="5">全部</el-radio>
                    <el-radio :label="0">草稿</el-radio>
                    <el-radio :label="1">待审核</el-radio>
@@ -22,17 +22,15 @@
             </el-form-item>
             <el-form-item label="频道列表:">
                 <!-- 频道列表 -->
-                <el-select @change="changeCondition" v-model="formData.channel_id">
+                <el-select  v-model="formData.channel_id">
                   <!-- 循环生成el-option -->
                   <el-option v-for="item in channels" :key="item.id" :value="item.id" :label="item.name">
-
                   </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="时间选择:">
               <!-- value-format 指定绑定的值的格式 -->
                  <el-date-picker
-                 @change="changeCondition"
                    v-model="formData.date"
                    type="daterange"
                    value-format="yyyy-MM-dd"
@@ -46,7 +44,7 @@
      <div class='article-item' v-for="(item,index) in list" :key="index">
          <!-- 布局 -->
          <!-- 左侧 -->
-        <div class='left'>
+        <div @click="preview(item)" class='left'>
             <img :src="item.cover.images.length ? item.cover.images[0] : defaultImg" alt="">
             <div class='info'>
                 <span class='title'>{{item.title}}</span>
@@ -57,6 +55,7 @@
         </div>
         <!-- 右侧 -->
         <div class='right'>
+            <span @click="preview(item)"><i  class='el-icon-view'></i>预览</span>
             <span @click="goEdit(item.id)"><i class="el-icon-edit"></i>修改</span>
             <span @click="delArticles(item.id)"><i class="el-icon-delete"></i>删除</span>
         </div>
@@ -72,6 +71,13 @@
   :total="page.total">
 </el-pagination>
      </el-row>
+     <el-dialog class='preview' width="375px" :visible="dialogVisible" @close="dialogVisible=false">
+         <img src="../../assets/img/phone.png" alt="">
+         <div class="article-info">
+          <div class='article-title' v-text="articleData.title"></div>
+          <div class='article-content' v-html="articleData.content"></div>
+         </div>
+     </el-dialog>
     </el-card>
 </template>
 
@@ -92,10 +98,30 @@ export default {
         total: 0,
         currentPage: 1,
         pageSize: 10
+      },
+      dialogVisible: false,
+      articleData: {
       }
     }
   },
+  watch: {
+    formData: {
+      handler: function (newObj) {
+        this.changeCondition()
+      },
+      deep: true
+    }
+  },
   methods: {
+    // 预览
+    preview (row) {
+      this.dialogVisible = true
+      this.$axios({
+        url: `/articles/${row.id.toString()}`
+      }).then(result => {
+        this.articleData = result.data
+      })
+    },
     goEdit (id) {
       // 动态路由传参 由于id是bignumber类型 需要toString 转成字符串
       this.$router.push(`/home/publish/${id.toString()}`)
@@ -190,6 +216,30 @@ export default {
     border-bottom: 1px dashed #ccc;
     height:50px;
     line-height: 50px;
+}
+.preview {
+  img {
+    width: 100%;
+    height: 667px;
+    position: absolute;
+    left:0;
+    top:0;
+  }
+  .article-info {
+    overflow-y: auto;
+    max-height: 560px;
+    position: relative;
+   .article-title {
+    text-align: center;
+    margin: 10px 0;
+    font-size:20px;
+  }
+  .article-content {
+    padding: 10px;
+  }
+
+  }
+
 }
 .article-item {
     display: flex;
