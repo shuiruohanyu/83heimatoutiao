@@ -1,11 +1,12 @@
 <template>
-  <div class='layout-aside'>
+  <div class='layout-aside' >
      <div class='title'>
-         <img src="../../assets/img/logo_admin.png" alt="">
+         <img :src="collapse ? smallImg : bigImg" alt="">
      </div>
      <!-- el-menu = router属性 true时,启用路由 -->
      <!-- :router="true"  和  router  -->
      <el-menu
+      :collapse="collapse"
       router
       style="width:201px"
       background-color="#353b4e"
@@ -55,15 +56,22 @@
 </template>
 
 <script>
-export default {
 
+export default {
+  props: ['collapse'],
+  data () {
+    return {
+      bigImg: require('../../assets/img/logo_admin.png'),
+      smallImg: require('../../assets/img/toutiao.png')
+    }
+  }
 }
 </script>
 
 <style lang='less' scoped>
 .layout-aside {
     height: 100vh;
-    width:200px;
+    // width:200px;
     .title {
         text-align: center;
         background-color: #2e2f32;

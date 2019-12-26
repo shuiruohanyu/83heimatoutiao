@@ -3,7 +3,7 @@
   <el-row class='layout-header' type='flex' align="middle" justify="space-between">
       <!-- 左侧 -->
       <el-col :span="6">
-          <i class="el-icon-s-unfold"></i>
+          <i @click="changeCollapse" :class="{'el-icon-s-unfold':collapse,'el-icon-s-fold': !collapse}"></i>
           <span class='title'>江苏传智播客教育科技股份有限公司</span>
       </el-col>
       <!-- 右侧 -->
@@ -36,10 +36,16 @@ export default {
   data () {
     return {
       userInfo: {}, // 个人信息对象
-      defaultImg: require('../../assets/img/avatar.jpg') // 转成base64
+      defaultImg: require('../../assets/img/avatar.jpg'), // 转成base64
+      collapse: false // 默认是展开的
     }
   },
   methods: {
+    // 改变状态
+    changeCollapse () {
+      this.collapse = !this.collapse
+      eventBus.$emit('changeCollapse') // 改变状态
+    },
     // 获取用户个人资料
     getUserInfo () {
       this.$axios({
@@ -76,7 +82,7 @@ export default {
 <style lang='less' scoped>
  .layout-header {
      height:50px;
-     .el-icon-s-unfold {
+     i {
          font-size: 22px;
      }
      .title {
